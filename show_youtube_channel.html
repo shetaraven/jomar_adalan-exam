@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Codalify Exam - Jomar</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        margin: 0;
+        box-sizing: border-box;
+    }
+    
+    #main {
+        background: #f9fafb;
+        min-height: 100vh;
+    }
+    
+    .profile_side {
+        width: 25%;
+        background: #fff;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-right: 1px solid #00000010;
+        height: 100%;
+    }
+    
+    .profile_side .banner img {
+        width: 100%;
+        height: 25vh;
+        background-size: 100% 100%;
+        background-position: center;
+    }
+    
+    .profile_details {
+        position: relative;
+        padding: 50px 10px;
+    }
+    
+    .profile_details img {
+        width: 100px;
+        height: 100px;
+        border: solid 5px #fff;
+        border-radius: 50%;
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .profile_details .name {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 900;
+        font-family: system-ui;
+    }
+    
+    .profile_details .description {
+        text-align: center;
+        font-size: 14px;
+        font-weight: 300;
+        font-family: system-ui;
+        color: #656565;
+        margin-top: 10px;
+    }
+    
+    .side_menu {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .side_menu li {
+        border-top: 1px solid #00000010;
+        border-bottom: 1px solid #00000010;
+        padding: 20px 40px;
+        background: #f9fafb;
+        cursor: pointer;
+        position: relative;
+        font-family: system-ui;
+    }
+    
+    .video_list {
+        width: calc(75%);
+        margin-left: 25%;
+        padding: 30px;
+    }
+    
+    .video_list_cont {
+        padding: 0;
+        list-style: none;
+        margin: 0;
+        width: 100%;
+        display: inline-block;
+    }
+    
+    .video_list_cont .white_container {
+        background: #fff;
+        overflow: hidden;
+        padding-bottom: 10px;
+        border: 1px solid #00000010;
+        transition: all ease-in-out .3s;
+    }
+    
+    .video_list_cont li {
+        width: calc(25%);
+        float: left;
+        box-sizing: border-box;
+        padding: 20px 10px;
+    }
+    
+    .video_list_cont li img {
+        width: 100%;
+        height: 20vh;
+        transition: all ease-in-out .3s;
+    }
+    
+    .video_list_cont li .image_cont {
+        height: 20vh;
+        overflow: hidden;
+    }
+    
+    .video_list_cont li a {
+        text-decoration: none;
+    }
+    
+    .video_list_cont li .vid_title {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        -webkit-line-clamp: 2;
+        max-height: 3rem;
+        color: #333;
+        font-weight: 900;
+        font-size: 16px;
+        padding: 10px;
+    }
+    
+    .video_list_cont li .vid_desc {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        -webkit-line-clamp: 3;
+        height: 4rem;
+        color: #333;
+        font-weight: 100;
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    .video_list_cont .white_container:hover {
+        box-shadow: 0 0 5px #d0d0d0;
+    }
+    
+    .video_list_cont .white_container:hover img {
+        transform: scale(1.1);
+    }
+    
+    .oooops {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    
+    .oooops h1 {
+        font-size: 150px;
+        color: #999;
+        margin: 0;
+    }
+    
+    .oooops p {
+        text-align: center;
+        font-size: 50px;
+        color: #656565;
+        margin: 0 0 20px;
+    }
+</style>
+
+<body>
+    <div id="main">
+        <div class="profile_side" v-if="channel_details">
+            <div class="banner">
+                <img :src="channel_details.banner_url" />
+            </div>
+            <div class="profile_details">
+                <img :src="channel_details.profile_pic" />
+                <div class="name">{{channel_details.name}}</div>
+                <div class="description">{{channel_details.description}}</div>
+            </div>
+            <ul class="side_menu">
+                <li>Video List</li>
+            </ul>
+        </div>
+
+        <div class="video_list" v-if="video_list">
+            <ul class="video_list_cont">
+                <li v-for="(video,key) in video_list " :key="key">
+                    <a :href="video.video_link" target="_blank">
+                        <div class="white_container">
+                            <div class="image_cont">
+                                <img :src="video.thumbnail">
+                            </div>
+                            <div class="vid_title">{{video.title}}</div>
+                            <div class="vid_desc">{{video.description}}</div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="oooops" v-if="!channel_details && !video_list">
+            <h1>OOOOOOP's</h1>
+            <p>No Data to Display</p>
+            <a href="sync_youtube_channel.php">Click Here to Load Data</a>
+        </div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#main',
+            data: {
+                message: 'Hello Vue!',
+                channel_id: 1,
+                channel_details: '',
+                video_list: ''
+            },
+            mounted() {
+                axios.get('youtube_channel_json.php?channel_id=' + this.channel_id).then(response => {
+                    if (response.data.channel) {
+                        this.channel_details = response.data.channel
+                        this.video_list = response.data.video_list
+                    } else {
+
+                    }
+                })
+            }
+        })
+    </script>
+
+</body>
+
+</html>
